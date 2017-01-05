@@ -1,0 +1,38 @@
+<script type="text/html" id="editor-oc">
+    <div class="content">
+        <div class="ui form">
+            <div class="inline field">
+                <label>名称</label>
+                <input v-model="oc.name">
+            </div>
+            <div class="inline field">
+                <label>DO：</label>
+                <selector :selected.sync="oc.storeDOId" :items="dos"></selector>
+            </div>
+            <div class="inline field">
+                <label>OM：</label>
+                <selector :selected.sync="oc.storeOMId" :items="oms"></selector>
+            </div>
+        </div>
+    </div>
+</script>
+<script>
+    Vue.component('editor-oc', {
+        props: ['oc'],
+        template: '#editor-oc',
+        data: function () {
+            return {dos: [], oms: []};
+        },
+        events: {
+            load: function () {
+                var that = this;
+                $.get('/data/editor/list/do').then(function (res) {
+                    that.dos = res;
+                });
+                $.get('/data/editor/list/om').then(function (res) {
+                    that.oms = res;
+                });
+            }
+        }
+    })
+</script>

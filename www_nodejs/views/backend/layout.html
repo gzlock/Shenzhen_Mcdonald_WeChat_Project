@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= title %></title>
+    <% include ./header.html %>
+    <style>
+        .pusher {
+            padding: 20px;
+            box-sizing: border-box;
+            width: calc(100vw - 280px);
+        }
+
+        @media only screen and (min-width: 1145px) {
+            .fixed.main.menu {
+                display: none;
+            }
+        }
+
+        @media only screen and (max-width: 1145px) {
+            .pusher {
+                padding: 50px 10px 10px 10px;
+                width: 100vw;
+            }
+        }
+    </style>
+</head>
+<body class="menu pushable">
+<!--菜单-->
+<% include ./menu.html %>
+<!--移动顶栏-->
+<div class="ui fixed inverted main menu">
+    <div class="ui container">
+        <a class="launch icon item"><i class="content icon"></i></a>
+        <div class="item"><%=title%></div>
+    </div>
+</div>
+<div class="pusher">
+    <%-body%>
+</div>
+<script>
+    $(function () {
+        $('.launch.icon').click(function () {
+            $('.ui.sidebar').sidebar('toggle');
+        })
+    });
+</script>
+</body>
+</html>

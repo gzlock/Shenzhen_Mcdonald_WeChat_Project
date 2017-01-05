@@ -1,0 +1,17 @@
+<!--列表选择器-->
+<script type="text/html" id="my-selector">
+    <select class="ui search dropdown" v-model="selected">
+        <option value="0">请选择</option>
+        <option :value="item.id" v-for="item in items">{{item.name}}</option>
+    </select>
+</script>
+<script>
+    Vue.component('selector', {
+        template: '#my-selector',
+        props: ['items', 'selected'],
+        data: function () {
+            return {};
+        }
+    });
+</script>
+<!--列表选择器-->

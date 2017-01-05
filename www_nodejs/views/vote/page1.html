@@ -1,0 +1,97 @@
+<style>
+    .page1-top {
+        padding: 20px 20px 0 20px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .page1-top img {
+        height: 40px;
+    }
+
+    .page1-content {
+        padding: 10px 0;
+    }
+
+    .page1 .slogan {
+        width: 80%;
+    }
+
+    .page1 .main {
+        width: 45%;
+    }
+
+    .page1-show {
+        width: 100px;
+        height: 120px;
+        position: absolute;
+        left: calc(50% - 50px);
+        bottom: 0;
+    }
+
+    .page1-show img {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+
+    .swiper-slide-active .page1-show img:nth-child(1) {
+        animation: show 1s .4s infinite alternate;
+        -webkit-animation: show 1s .4s infinite alternate;
+    }
+
+    .swiper-slide-active .page1-show img:nth-child(2) {
+        animation: show 1s .3s infinite alternate;
+        -webkit-animation: show 1s .3s infinite alternate;
+    }
+
+    .swiper-slide-active .page1-show img:nth-child(3) {
+        animation: show 1s .2s infinite alternate;
+        -webkit-animation: show 1s .2s infinite alternate;
+    }
+
+    .swiper-slide-active .page1-show img:nth-child(4) {
+        animation: show 1s .1s infinite alternate;
+        -webkit-animation: show 1s .1s infinite alternate;
+    }
+
+    .swiper-slide-active .page1-show img:nth-child(5) {
+        animation: show 1s infinite alternate;
+        -webkit-animation: show 1s infinite alternate;
+    }
+</style>
+<div class="page1-top padding-10px">
+    <img class="left" src="/public/images/page1/top-left.png">
+    <img class="right" src="/public/images/page1/top-right.png">
+</div>
+<div class="page1-content main-content">
+    <div class="text-align-center">
+        <img class="slogan ani" src="/public/images/page1/content-main.png" swiper-animate-effect="fadeInDown"
+             swiper-animate-duration="0.5s">
+        <img class="main ani" src="/public/images/page1/content-people.png" swiper-animate-effect="fadeInUp"
+             swiper-animate-duration="0.5s">
+    </div>
+</div>
+<div class="page1-show display-inline-block">
+    <img src="/public/images/page1/show5.png">
+    <img src="/public/images/page1/show4.png">
+    <img src="/public/images/page1/show3.png">
+    <img src="/public/images/page1/show2.png">
+    <img src="/public/images/page1/show1.png">
+</div>
+<div class="ribbon ribbon1"></div>
+<div class="ribbon ribbon2"></div>
+<script>
+    $(function () {
+        window.OnSwipe['<%=index%>'] = now = function () {
+            if (window.OnSwipe[1] != now) return;
+            window.lockSwipe();
+            window.OnSwipe.splice(0, 1);
+            window.swiper.removeSlide(0);
+        };
+        $('.page1-show').click(function () {
+            window.next();
+        });
+    });
+</script>

@@ -1,0 +1,33 @@
+<div class="ui vertical inverted sidebar menu left visible">
+    <div class="item">
+        <a href="/data/logout" title="退出" class="circular ui inverted small basic icon button" @click="logout">
+            <i class="icon power"></i>
+        </a>
+        <br>
+        当前用户：<b><%=user.username%></b>
+        <br>
+        用户级别：<b><%=user.userGroup.name%></b>
+    </div>
+    <a class="item" href="/data">
+        <b>首页</b>
+    </a>
+    <% if(user.userGroup.id <= 2){%>
+    <div class="item">
+        <div class="header">管理员功能</div>
+        <div class="menu">
+            <% if(user.userGroup.id ==1){%>
+            <a class="item" href="/data/admin/bulkCreate">批量录入门店</a>
+            <a class="item" href="/data/admin/managerBulkCreate">批量录入经理</a>
+            <a class="item" href="/data/admin/user">账号管理</a>
+            <%}%>
+            <a class="item" href="/data/editor">管理 DO/OM/OC/门店/经理</a>
+        </div>
+    </div>
+    <%}%>
+    <div class="item">
+        <div class="header">数据展示</div>
+        <div class="menu">
+            <a class="item" href="/data/view">数据</a>
+        </div>
+    </div>
+</div>

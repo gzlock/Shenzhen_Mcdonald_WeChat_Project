@@ -1,0 +1,93 @@
+<div id="page7">
+    <div class="page1-top padding-10px">
+        <img class="left" src="/public/images/page1/top-left.png">
+        <img class="right" src="/public/images/page1/top-right.png">
+    </div>
+    <div class="slogan text-align-center">
+        <img src="/public/images/slogan.png">
+    </div>
+    <div class="padding-10px main-content">
+
+        <div class="question">
+            <div class="question-text">{{question}}</div>
+            <div class="question-slider" @touchstart="touchmove" @touchmove="touchmove"
+                 @touchend="touchend">
+                <img class="question-cursor" :style="{left:left}" src="/public/images/cursor.png"/>
+                <div class="question-tag">
+                    <div class="question-tag-text" v-for="n in 11" :value="n"></div>
+                </div>
+                <div class="question-bg" :class="{'yellow':touching}">
+                    <div class="question-bg-text" v-for="n in 11">
+                        {{n}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="people people5 ani" swiper-animate-effect="bounceInUp" swiper-animate-duration="0.5s"></div>
+    <div class="cursor-animate" v-show="checked"></div>
+</div>
+<script>
+    $(function () {
+        var $questionBgText;
+        var question = window.forum[4] = new Vue({
+            el: '#page7',
+            data: {
+                question: '5、按照您今天的满意度您会将我们的餐厅推荐给朋友吗?（10会 ,0不会）',
+                answers: {field: 'v5', value: 5},
+                checked: false,
+                touching: false,
+                left: {left: '50%'}
+            },
+            methods: {
+                touchmove: function (e) {
+                    $questionBgText.removeClass('visibility-hidden');
+                    var $target = $(document.elementFromPoint(e.touches[0].pageX, e.touches[0].pageY));
+                    if (!$target.is('.question-tag-text'))return;
+//                    console.log('touchmove', $target);
+                    this.answers.value = $target.attr('value');
+                    move($questionBgText.eq(this.answers.value));
+                    this.touching = true;
+                    this.hasChecked = true;
+                },
+                touchend: function (e) {
+                    this.touching = false;
+                    $questionBgText.each(function (i) {
+                        if (i == 0 || i == 10 || i == question.answers.value) return true;
+                        $(this).addClass('visibility-hidden');
+                    });
+                },
+            },
+            computed: {
+                hasChecked: {
+                    set: function (v) {
+                        this.checked = v;
+                        lockSwipe(v);
+                        return v;
+                    }
+                },
+            }
+        });
+        question.$nextTick(function () {
+            $questionBgText = $('.question-bg .question-bg-text');
+            move($questionBgText.eq(5));
+            question.touchend();
+        });
+        window.OnSwipe['<%=index%>'] = function () {
+            lockSwipe(question.checked);
+        };
+
+        function move($e) {
+            question.left = $e.offset().left + ($e.outerWidth() / 2) -
+                    $e.offsetParent().offset().left - 12 + 'px';
+        }
+
+        function lockSwipe(value) {
+            if (value) {
+                window.unlockSwipe();
+            } else {
+                window.lockSwipe();
+            }
+        }
+    });
+</script>

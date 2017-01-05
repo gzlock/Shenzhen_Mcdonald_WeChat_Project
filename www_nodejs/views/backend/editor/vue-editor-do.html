@@ -1,0 +1,16 @@
+<script type="text/html" id="editor-do">
+    <div class="content">
+        <div class="ui form">
+            <div class="inline field">
+                <label>名称</label>
+                <input v-model="do.name">
+            </div>
+        </div>
+    </div>
+</script>
+<script>
+    Vue.component('editor-do', {
+        props: ['do'],
+        template: '#editor-do',
+    })
+</script>

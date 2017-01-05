@@ -1,0 +1,56 @@
+<div id="page6">
+    <div class="page1-top padding-10px">
+        <img class="left" src="/public/images/page1/top-left.png">
+        <img class="right" src="/public/images/page1/top-right.png">
+    </div>
+    <div class="slogan text-align-center">
+        <img src="/public/images/slogan.png">
+    </div>
+    <div class="padding-10px main-content">
+        <question :question="question" :answers="answers" :type="type" :layout="layout"/>
+    </div>
+    <div class="cursor-animate" v-show="checked"></div>
+    <div class="people people4 bottom-right ani" swiper-animate-effect="bounceInUp"
+         swiper-animate-duration="0.5s"></div>
+</div>
+<script>
+    $(function () {
+        var question = window.forum[3] = new Vue({
+            el: '#page6',
+            data: {
+                question: '4、您会为我们的餐厅打赏吗？<br>我们会替您支付打赏的费用：',
+                type: 'radio',
+                layout: 'list',
+                checked: false,
+                answers: [
+                    {text: '0元', checked: false},
+                    {text: '1元', checked: false},
+                    {text: '2元', checked: false},
+                    {text: '3元', checked: false},
+                ],
+            },
+            computed: {
+                hasChecked: {
+                    set: function (v) {
+                        this.checked = v;
+                        lockSwipe(v);
+                        return v;
+                    }
+                }
+            }
+        });
+
+        function lockSwipe(value) {
+            if (value) {
+                window.unlockSwipe();
+            } else {
+                window.lockSwipe();
+            }
+        }
+
+        window.OnSwipe['<%=index%>'] = function () {
+            lockSwipe(question.checked);
+        };
+
+    });
+</script>

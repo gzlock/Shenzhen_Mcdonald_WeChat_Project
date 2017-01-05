@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>门店二维码</title>
+    <% include ../header.html %>
+    <script src="//cdn.bootcss.com/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #qrcode div.input {
+            width: 100%;
+        }
+
+        #qrcode div.input:nth-child(1) {
+            margin-bottom: 10px;
+        }
+
+        #qrcode .label {
+            position: absolute;
+        }
+
+        #qrcode #canvas {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="ui card" id="qrcode">
+    <div class="content">
+        <div class="header">获取门店二维码</div>
+        <div class="description">
+            <div class="ui left icon input">
+                <input type="text" placeholder="查询 四位编号/七位编号" v-model="query" @input="load | debounce 500">
+                <i class="fort awesome icon"></i>
+            </div>
+            <div class="ui pointing red basic label" v-show="error">{{error}}</div>
+            <div class="ui pointing blue basic label" v-show="loading">
+                <div class="ui active centered inline loader"></div>
+            </div>
+            <div>
+                <p v-show="store.name">门店名称 {{store.name}}</p>
+                <p v-show="store.url">投票链接 <a :href="store.url">{{store.url}}</a></p>
+                <div id="canvas" v-show="store.url"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        var $canvas = $('#canvas');
+        var data = {query: null, loading: false, error: null, store: {name: null, url: null}};
+        new Vue({
+            el: '#qrcode',
+            data: data,
+            methods: {
+                load: function () {
+                    var that = this;
+                    that.store.name = null;
+                    that.store.url = null;
+                    $canvas.empty();
+                    if (that.loading) return;
+                    that.error = null;
+                    if (that.query == '')return;
+                    that.loading = true;
+                    that.store.name = null;
+                    that.store.url = null;
+                    $canvas.empty();
+                    $.get({url: url(that.query)}).then(function (data) {
+                        that.store.name = data.data.name;
+                        that.store.url = data.data.url;
+                        $canvas.qrcode({width: 800, height: 800, text: that.store.url});
+                        $canvas.find('canvas').css({width: '100%', height: '100%'});
+                    }).catch(function () {
+                        that.error = '找不到要查询的门店';
+                    }).done(function () {
+                        that.loading = false;
+                    })
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

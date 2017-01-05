@@ -1,0 +1,46 @@
+<!--门店编辑组件-->
+<script type="text/html" id="editor-manager">
+    <div class="content">
+        <div class="header" v-if="manager.id">编辑经理：{{manager.name}}</div>
+        <div class="header" v-else>新增经理：</div>
+        <div class="ui divider"></div>
+        <div class="ui form">
+            <div class="fields">
+                <div class="field">
+                    <label>姓名</label>
+                    <input type="text" placeholder="姓名" v-model="manager.name">
+                </div>
+                <div class="field">
+                    <label>工号</label>
+                    <input type="text" placeholder="工号" v-model="manager.code">
+                </div>
+                <div class="field">
+                    <label>当前工作于</label>
+                    <selector :selected.sync="manager.storeId" :items="stores"></selector>
+                </div>
+                <div class="field">
+                    <label>是否在职</label>
+                    <switcher :selected.sync="manager.work" text="在职"></switcher>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+<script>
+    Vue.component('editor-manager', {
+        props: ['manager'],
+        template: '#editor-manager',
+        data: function () {
+            return {stores: []}
+        },
+        events: {
+            load: function () {
+                var that = this;
+                $.get('/data/editor/list/store').then(function (res) {
+                    that.stores = res;
+                });
+            },
+        }
+    });
+</script>
+<!--门店编辑组件-->

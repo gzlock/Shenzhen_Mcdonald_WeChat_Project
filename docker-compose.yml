@@ -1,0 +1,73 @@
+#mysql image
+mysql:
+  image: mysql/mysql-server:latest
+  restart: always
+  volumes:
+  - ./mysql_data:/var/lib/mysql
+  - /etc/localtime:/etc/localtime
+  environment:
+  - MYSQL_ROOT_PASSWORD=ibYgRgTVWCLoRiYD
+  - MYSQL_USER=MacDonald
+  - MYSQL_PASSWORD=LthGiUXlEnWTWWU7
+  - MYSQL_DATABASE=MacDonald
+  command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+  ports:
+  - "33060:3306"
+  log_driver: "none"
+
+#redis
+redis:
+  image: docker.io/redis:latest
+  restart: always
+  volumes:
+  - /etc/localtime:/etc/localtime
+  log_driver: "none"
+
+#phpmyadmin
+phpmyadmin:
+  image: phpmyadmin/phpmyadmin:latest
+  restart: always
+  volumes:
+  - /etc/localtime:/etc/localtime
+  links:
+  - mysql:db
+  ports:
+  - "8080:80"
+  environment:
+  - PHP_UPLOAD_MAX_FILESIZE=500M
+  log_driver: "none"
+
+#nodejs image
+nodejs:
+  image: gzlock/node-pm2:latest
+  volumes:
+  - /etc/localtime:/etc/localtime
+  - ./www_nodejs:/app/host
+  restart: always
+  links:
+  - mysql:mysql
+  - redis:redis
+  command: sh ./start
+  log_driver: "json-file"
+  log_opt:
+    max-size: "1m"
+    max-file: "5"
+  ports: #暴露8081给redis-commander
+  - "8081:8081"
+
+#nginx programe image
+nginx:
+  image: docker.io/gzlock/nginx:latest
+  restart: always
+  volumes:
+  - /etc/localtime:/etc/localtime
+  - ./nginx_conf:/etc/nginx/conf.d
+  - ./ssl:/ssl
+  - ./www_nodejs:/www_nodejs
+  links:
+  # port 80
+  - nodejs
+  ports:
+  - "80:80"
+  - "443:443"
+  log_driver: "none"

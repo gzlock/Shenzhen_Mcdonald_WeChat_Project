@@ -1,0 +1,107 @@
+{
+  "apps": [
+    {
+      "name": "Redis管理",
+      "interpreter": "sh",
+      "script": "start-redis-commander",
+      "max_restarts": 1
+    },
+    {
+      "name": "数据库变动",
+      "script": "mysql.js",
+      "max_restarts": 1,
+      "autorestart": false,
+      "watch": [
+        "mysql.js",
+        "sequelize",
+        "config.js"
+      ],
+      "env_production": {
+        "NODE_ENV": "production"
+      }
+    },
+    {
+      "name": "后端数据",
+      "script": "backend.js",
+      "max_restarts": 1,
+      "watch": [
+        "backend.js",
+        "config.js",
+        "sequelize",
+        "routers/backend",
+        "function"
+      ],
+      "env": {
+        "NODE_ENV": "dev",
+        "PORT": 81
+      },
+      "env_production": {
+        "NODE_ENV": "production",
+        "PORT": 81
+      }
+    },
+    {
+      "name": "前端投票",
+      "script": "vote.js",
+      "max_restarts": 1,
+      "restart_delay": 300,
+      "watch": [
+        "vote.js",
+        "config.js",
+        "sequelize",
+        "routers/vote",
+        "function"
+      ],
+      "env": {
+        "NODE_ENV": "dev",
+        "PORT": 80
+      },
+      "env_production": {
+        "NODE_ENV": "production",
+        "PORT": 80
+      }
+    },
+    {
+      "name": "定时统计",
+      "script": "timingTask.js",
+      "max_restarts": 1,
+      "restart_delay": 300,
+      "autorestart": false,
+      "watch": [
+        "timingTask.js",
+        "config.js",
+        "sequelize"
+      ]
+    },
+    {
+      "name": "微信Token",
+      "script": "weChatAccessToken.js",
+      "watch": [
+        "weChatAccessToken.js",
+        "config.js"
+      ],
+      "env": {
+        "NODE_ENV": "dev"
+      },
+      "env_production": {
+        "NODE_ENV": "production"
+      }
+    },
+    {
+      "name": "测试用的",
+      "script": "test.js",
+      "max_restarts": 1,
+      "restart_delay": 300,
+      "autorestart": false,
+      "watch": [
+        "test.js"
+      ],
+      "env": {
+        "NODE_ENV": "dev"
+      },
+      "env_production": {
+        "NODE_ENV": "production"
+      }
+    }
+  ]
+}

@@ -1,0 +1,166 @@
+<img class="bgMusic" src="http://file.ih5.cn/files/247639/16811/e893db.svg">
+<audio id="bgMusic" preload="auto">
+    <source src="/public/music/1.mp3"/>
+</audio>
+<script>
+    $(function () {
+        $.ajaxSetup({});
+        var bgm = document.getElementById('bgMusic');
+        var weChatConfig = JSON.parse('<%- weChatConfig %>');
+        var config = {
+            title: '为我点赞 为服务打赏',
+            link: window.location.href.split('#')[0],
+            desc: '完成本次点赞活动即可领取麦当劳最新优惠券',
+            imgUrl: 'http://' + window.location.host + '/public/images/share.jpg',
+        };
+        wx.config(weChatConfig);
+        wx.ready(function () {
+            console.log('play music');
+            bgm.play();
+
+            console.log('微信config成功');
+            wx.onMenuShareTimeline(config);
+            wx.onMenuShareAppMessage(config);
+            wx.onMenuShareQQ(config);
+            wx.onMenuShareWeibo(config);
+            wx.onMenuShareQZone(config);
+        });
+        wx.error(function (err) {
+            console.log('微信config失败', err);
+        });
+        $('.bgMusic').click(function () {
+            bgm.paused ? bgm.play() : bgm.pause();
+        });
+    });
+</script>
+
+<script type="text/x-template" id="checkbox-question-component">
+    <div class="question">
+        <div class="question-text">{{{question}}}</div>
+        <div class="question-answers {{layout}}">
+            <div v-for="answer in answers">
+                <div class="checkbox-answer display-inline-block" @click="answerClick(answer)">
+                    <span class="checkbox" :class="{'checked':!!answer.checked}"></span>
+                    {{answer.text}}
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script>
+    $(function () {
+        var isLocking = false;
+        Vue.config.debug = true;
+        window.OnSwipe = [];
+        window.forum = [];
+        window.lockSwipe = function () {
+            window.swiper.lockSwipeToNext();
+            isLocking = true;
+        };
+        window.unlockSwipe = function () {
+            window.swiper.unlockSwipeToNext();
+            isLocking = false;
+        };
+        window.next = function () {
+            window.unlockSwipe();
+            window.swiper.slideNext();
+            window.lockSwipe();
+        };
+        var swiper = window.swiper = new Swiper('.swiper-container', {
+            direction: 'vertical',
+            preloadImages: true,
+            onInit: function (swiper) {
+                swiperAnimateCache(swiper); //隐藏动画元素
+                swiperAnimate(swiper);//初始化完成开始动画
+                window.OnSwipe[0] && window.OnSwipe[0]();
+            },
+            onSlideChangeEnd: function (swiper) {
+                swiperAnimate(swiper); //每个slide切换结束时也运行当前slide动画
+                var currentSwiper = window.OnSwipe[swiper.activeIndex];
+                if (currentSwiper) {
+                    if (currentSwiper.constructor == Function)
+                        currentSwiper(swiper);
+                } else {
+                    window.unlockSwipe();
+                }
+            },
+        });
+
+        Vue.component('question', {
+            template: '#checkbox-question-component',
+            props: ['question', 'answers', 'type', 'layout'],
+            data: function () {
+                return {};
+            },
+            methods: {
+                answerClick: function (answer) {
+                    if (this.type && this.type.toLowerCase() == 'radio' && !answer.checked) {
+                        for (var i in this.answers) {
+                            this.answers[i].checked = false;
+                        }
+                        answer.checked = true;
+                    } else {
+                        answer.checked = !answer.checked;
+                    }
+                    var hasChecked = false;
+                    for (var i in this.answers) {
+                        if (this.answers[i].checked) {
+                            hasChecked = true;
+                            break;
+                        }
+                    }
+                    this.$parent.hasChecked = hasChecked;
+                }
+            },
+        });
+        window.Toast = {
+            isShowing: false,
+            show: function (text) {
+
+            }
+        };
+    })
+</script>
+<div id="alert" style="display: none">
+    <div class="window">
+        <div class="message text-align-center">{{{message}}}</div>
+        <div @click="sure" class="button text-align-center" v-show="showButton">好</div>
+    </div>
+    <div class="background"></div>
+</div>
+<script>
+    $(function () {
+        var cb;
+        window.Alert = new Vue({
+            el: '#alert',
+            data: {message: null, showButton: true},
+            methods: {
+                show: function (message, _cb, noButton) {
+                    this.message = message;
+                    $(this.$el).css({display: 'flex'});
+                    this.showButton = !noButton;
+                    cb = _cb;
+                },
+                sure: function () {
+                    $(this.$el).css({display: 'none'});
+                    cb && cb();
+                }
+            }
+        });
+    });
+</script>
+
+<div class="swiper-container">
+    <div class="swiper-wrapper">
+        <div class="swiper-slide loading "><%- include('loading.html',{index:0}) %></div>
+        <div class="swiper-slide page1 "><%- include('page1.html',{index:1}) %></div>
+        <div class="swiper-slide page2 "><%- include('page2.html',{index:2}) %></div>
+        <div class="swiper-slide page3 "><%- include('page3.html',{index:3}) %></div>
+        <div class="swiper-slide page4 "><%- include('page4.html',{index:4}) %></div>
+        <div class="swiper-slide page5 "><%- include('page5.html',{index:5}) %></div>
+        <div class="swiper-slide page6 "><%- include('page6.html',{index:6}) %></div>
+        <div class="swiper-slide page7 "><%- include('page7.html',{index:7}) %></div>
+        <div class="swiper-slide page8 gradient-background"><%- include('page8.html',{index:8}) %></div>
+    </div>
+</div>

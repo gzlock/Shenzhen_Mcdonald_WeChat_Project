@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录 - 数据中心</title>
+    <% include ../header.html %>
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #login div.input {
+            width: 100%;
+        }
+
+        #login div.input:nth-child(1) {
+            margin-bottom: 10px;
+        }
+
+        #login .label {
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+<div id="login" class="ui card" @keyup.enter="login">
+    <div class="content">
+        <div class="header">登录</div>
+        <div class="description">
+            <div class="ui form">
+                <div class="field">
+                    <label>账号</label>
+                    <div class="ui left icon input">
+                        <input type="text" v-model="a">
+                        <i class="user icon"></i>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>密码</label>
+                    <div class="ui left icon input">
+                        <input type="password" v-model="b">
+                        <i class="lock icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="extra content">
+        <button class="ui blue submit button" :disabled="loading" @click="login">
+            登录
+        </button>
+        <div class="ui left pointing red basic label" v-show="error">登录失败</div>
+        <div class="ui left pointing blue basic label" v-show="loading && !success">
+            <div class="ui active centered inline loader"></div>
+        </div>
+        <div class="ui leftpointing blue basic label" v-show="success">
+            登录成功
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        var data = {a: null, b: null, loading: false, error: null, success: false};
+        new Vue({
+            el: '#login',
+            data: data,
+            methods: {
+                login: function () {
+                    if (data.loading)return;
+                    data.loading = true;
+                    data.success = null;
+                    data.error = null;
+                    $.post({url: '/data/login', data: JSON.stringify({a: data.a, b: data.b})}).then(function () {
+                        data.error = null;
+                        data.success = "登录成功";
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 1500);
+                    }).catch(function () {
+                        data.error = true;
+                        data.success = null;
+                        data.loading = false;
+                    }).done(function () {
+                        data.loading = false;
+                    });
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

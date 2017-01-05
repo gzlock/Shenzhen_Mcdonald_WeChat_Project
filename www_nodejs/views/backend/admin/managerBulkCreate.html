@@ -1,0 +1,115 @@
+<div class="ui grid form" id="bulkCreate">
+    <div class="row">
+    <div class="ten wide column">
+        <div class="field">
+            <label>请直接全选整表然后复制到这里</label>
+            <textarea @paste="paste('name',$event) | debounce 500"></textarea>
+        </div>
+    </div>
+    </div>
+    <div class="five wide column" v-show="dataLines">
+        <div class="field">
+            <label>数据中，有{{dataLines}}个经理</label>
+            <table class="ui compact celled table">
+                <thead>
+                <tr>
+                    <th>需要的字段</th>
+                    <th>从数据识别到的字段</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="f in fields">
+                    <td>{{f.name}}</td>
+                    <td>
+                        <select v-model="f.select">
+                            <option value="-1">请选择</option>
+                            <option v-for="f in dataFields" :value="$index">{{f}}</option>
+                        </select>
+                    </td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <th colspan="2">
+                    <button class="ui right floated small primary labeled icon button" @click="submit"
+                            :data-tooltip="error" data-inverted="" :disabled="loading">
+                        <i class="fort awesome icon"></i> 添加到数据库
+                    </button>
+                </th>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        var dataLines, data = [];
+        var fields = [
+            {name: '门店七位编号', field: 'code7', select: -1,},
+            {name: '工号', field: 'code', select: -1},
+            {name: '名称', field: 'name', select: -1},
+        ];
+        new Vue({
+            el: '#bulkCreate',
+            data: {
+                fields: fields,
+                dataFields: null,
+                dataLines: 0,
+                error: null,
+                loading: false,
+            },
+            methods: {
+                paste: function (name, e) {
+                    var value = $(e.target).val();
+                    dataLines = value.match(/.{5,}/g);
+                    this.dataLines = dataLines.length - 1;
+                    this.dataFields = dataLines[0].match(/[^\t]+/g);
+                    console.log('行数', this.dataLines);
+                },
+                submit: function () {
+                    this.error = null;
+                    if (this.hasUnSelect())
+                        return this.error = '还有没有选择的字段';
+                    if (this.hasSelectSame())
+                        return this.error = '有些字段选择了相同的选项';
+                    if (data.length == 0) {
+                        for (var i = 1; i < dataLines.length; i++) {
+                            data.push(dataLines[i].split('\t'));
+                        }
+                    }
+                    var that = this;
+                    that.loading = true;
+                    var finalData = [];
+                    for (var i in data) {
+                        var d = {};
+                        for (var j in this.fields) {
+                            var f = this.fields[j];
+                            d[f.field] = data[i][f.select];
+                        }
+                        finalData.push(d);
+                    }
+                    console.log('data[0]', data[0], finalData[0]);
+                    this.loading = true;
+                    $.post({url: url(), data: JSON.stringify(finalData)}).then(function () {
+                        alert('提交成功');
+                    }).catch(function () {
+                        that.error = '提交失败了';
+                    }).done(function () {
+                        that.loading = false;
+                    });
+                },
+                hasUnSelect: function () {//是否没有选择的
+                    for (var i in this.fields)
+                        if (this.fields[i].select == -1)
+                            return true;
+                    return false;
+                },
+                hasSelectSame: function () {//是否选择了相同
+                    var array = [];
+                    for (var i in this.fields)
+                        array.push(this.fields[i].select);
+                    return _.uniq(array).length != array.length;
+                }
+            }
+        });
+    });
+</script>

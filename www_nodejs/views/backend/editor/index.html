@@ -1,0 +1,113 @@
+<% include ../vue-component/vue-selector.html %>
+<% include ../vue-component/vue-switcher.html %>
+<% include vue-search.html %>
+<% include vue-editor-store.html %>
+<% include vue-editor-manager.html %>
+<% include vue-editor-do.html %>
+<% include vue-editor-om.html %>
+<% include vue-editor-oc.html %>
+
+
+<div id="editor">
+    <div>*最多只会显示10个搜索结果，如果搜索结果没有想要的内容，请继续填写更详细的搜索内容</div>
+    <div class="ui top attached tabular menu">
+        <a class="item" data-tab="do">DO</a>
+        <a class="item" data-tab="om">OM</a>
+        <a class="item" data-tab="oc">OC</a>
+        <a class="item active" data-tab="store">门店</a>
+        <a class="item" data-tab="manager">经理</a>
+    </div>
+    <div class="ui bottom attached tab segment" data-tab="do">
+        <search placeholder="DO姓名" type="do"/>
+    </div>
+    <div class="ui bottom attached tab segment" data-tab="om">
+        <search placeholder="OM姓名" type="om"/>
+    </div>
+    <div class="ui bottom attached tab segment" data-tab="oc">
+        <search placeholder="OC姓名" type="oc"/>
+    </div>
+    <div class="ui bottom attached tab segment active" data-tab="store">
+        <search placeholder="店名/四位/七位编号" type="store"/>
+    </div>
+    <div class="ui bottom attached tab segment" data-tab="manager">
+        <search placeholder="经理姓名/工号" type="manager"/>
+    </div>
+    <div id="editor-container" v-show="!!type">
+        <div class="ui card" style="width: auto;">
+            <editor-store v-if="type=='store'" :store="item"></editor-store>
+            <editor-manager v-if="type=='manager'" :manager="item"></editor-manager>
+            <editor-do v-if="type=='do'" :do="item"></editor-do>
+            <editor-om v-if="type=='om'" :om="item"></editor-om>
+            <editor-oc v-if="type=='oc'" :oc="item"></editor-oc>
+
+            <div class="extra content">
+                <div v-show="!!type" class="ui blue button" @click="save" :class="{loading:submitting}">
+                    提交
+                </div>
+                <div class="ui positive message" v-show="!submitting && success">
+                    <div class="header">
+                        提交成功
+                    </div>
+                </div>
+                <div class="ui negative message" v-show="!submitting && !!error">
+                    <div class="header">
+                        提交失败
+                    </div>
+                    <p>{{{error}}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $('.menu .item').tab({
+            onVisible: function () {
+                editor.type = null;
+            }
+        });
+        var editor = new Vue({
+            el: '#editor',
+            data: {success: false, error: null, type: null, item: null, submitting: false,},
+            events: {
+                edit: function (type, item) {
+                    this.error = null;
+                    this.success = false;
+                    this.type = type;
+                    this.item = item;
+                    this.$nextTick(function () {
+                        this.$broadcast('load');
+                        $('.ui.checkbox').checkbox();
+                    });
+                },
+            },
+            methods: {
+                save: function () {
+                    var that = this;
+                    if (that.submitting)
+                        return;
+                    that.submitting = true;
+                    that.error = null;
+                    that.success = false;
+                    var url = '/data/editor/save/' + that.type;
+                    $.post({url: url, data: JSON.stringify(that.item)}).then(function (res) {
+                        that.success = true;
+                        if (that.item.id) return;
+                        that.item.id = res.id;
+                        if (that.type == 'do')
+                            dos.push(that.item);
+                        else if (that.type == 'om')
+                            oms.push(that.item);
+                        else if (that.type == 'ocs')
+                            ocs.push(that.item);
+                    }).catch(function (res) {
+                        that.error = res.responseJSON.message || '发生未知错误';
+                    }).done(function () {
+                        that.submitting = false;
+                    });
+                }
+            }
+        });
+    });
+</script>

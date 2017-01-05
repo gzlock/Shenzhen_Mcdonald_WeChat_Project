@@ -1,0 +1,111 @@
+<% include ../vue-component/vue-selector.html %>
+
+<div id="users" class="ui form">
+    <div class="five fields">
+        <div class="field">
+            <label>账号(长度3位字符)</label>
+        </div>
+        <div class="field">
+            <label>密码</label>
+        </div>
+        <div class="field">
+            <label>级别</label>
+        </div>
+        <div class="field">
+            <label>值(管理员可以留空)</label>
+        </div>
+        <div class="field">
+            <label>保存</label>
+        </div>
+    </div>
+    <div class="five fields" @keyup.enter="save(addUser)">
+        <div class="field">
+            <input placeholder="账号" v-model="addUser.username">
+        </div>
+        <div class="field">
+            <input placeholder="密码" v-model="addUser.password">
+        </div>
+        <div class="field">
+            <selector :items="userGroups" :selected.sync="addUser.userGroup.id"></selector>
+        </div>
+        <div class="field">
+            <input placeholder="值" v-model="addUser.value">
+        </div>
+        <div class="field">
+            <button class="ui blue button" @click="save(addUser)">添加</button>
+        </div>
+    </div>
+    <div class="five fields" @keyup.enter="save(user)" v-for="user in users">
+        <div class="field">
+            <input placeholder="账号" v-model="user.username">
+        </div>
+        <div class="field">
+            <input placeholder="密码(为空则不修改)" v-model="user.password">
+        </div>
+        <div class="field">
+            <selector :items="userGroups" :selected.sync="user.userGroup.id"></selector>
+        </div>
+        <div class="field">
+            <input placeholder="值" v-model="user.value">
+        </div>
+        <div class="field">
+            <button class="ui basic blue button" @click="save(user)">保存</button>
+            <button class="ui basic red button" @click="remove(user)">删除</button>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        var users = JSON.parse('<%-JSON.stringify(users)%>');
+        var userGroups = JSON.parse('<%-JSON.stringify(userGroups)%>');
+        var editor = new Vue({
+            el: '#users',
+            data: {
+                addUser: {username: null, password: null, userGroup: {id: 0}, value: null},
+                users: users,
+                userGroups: userGroups
+            },
+            methods: {
+                save: function (user) {
+                    if (user == editor.addUser) {
+                        if (_.isEmpty(user.username) || _.isEmpty(user.password) || user.userGroup.id == 0)
+                            return alert('请继续完善');
+                    }
+                    $.post({
+                        url: url(),
+                        data: JSON.stringify({
+                            id: user.id,
+                            a: user.username, b: user.password, userGroupId: user.userGroup.id,
+                            value: user.value
+                        })
+                    }).then(function () {
+                        if (user != editor.addUser)return;
+                        users.push({
+                            username: user.username,
+                            password: user.password,
+                            userGroup: {id: user.userGroup.id},
+                            value: user.value
+                        });
+                        editor.addUser.username = '';
+                        editor.addUser.password = '';
+                        editor.addUser.userGroup.id = 0;
+                    }).catch(function (res) {
+                        var message = res.responseJSON.message;
+                        alert(message);
+                    });
+                },
+                remove: function (user) {
+                    if (!window.confirm('确认删除 ' + user.username + ' 这个账号？'))
+                        return;
+                    $.ajax({type: 'delete', url: url(user.id)}).then(function () {
+                        users.splice(users.indexOf(user), 1);
+                    }).catch(function (res) {
+                        var message = res.responseJSON.message;
+                        alert(message);
+                    });
+                }
+            }
+        });
+
+    });
+</script>

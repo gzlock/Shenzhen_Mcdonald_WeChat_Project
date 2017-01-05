@@ -1,0 +1,85 @@
+<style>
+    .page8 .margin-top {
+        margin-top: 20px;
+    }
+
+    .page8 .tips2 img {
+        width: 80%;
+    }
+
+    .page8 .tips img {
+        width: 60%;
+    }
+
+    .page8 .icon {
+        margin-top: 40px;
+    }
+
+    .page8 .icon img {
+        height: 200px;
+    }
+
+    .page8 .button img {
+        width: 150px;
+    }
+</style>
+<div id="page8">
+    <exchange :type="type" :id="id"/>
+</div>
+<script type="text/x-template" id="exchange">
+    <div class="text-align-center icon">
+        <img class="main" src="/public/images/page8/coupon-{{type}}.png">
+    </div>
+    <div class="text-align-center tips2 margin-top">
+        <img src="/public/images/page8/tips2.png">
+    </div>
+    <div class="text-align-center tips margin-top">
+        <img src="/public/images/page8/tips.png">
+    </div>
+    <div class="text-align-center button margin-top">
+        <img src="/public/images/page8/exchange-button.png" @click="use">
+    </div>
+</script>
+<script>
+    Vue.component('exchange', {
+        template: '#exchange',
+        props: ['type', 'id'],
+        data: function () {
+            return {};
+        },
+        methods: {
+            use: function () {
+                var that = this;
+                $.get('/coupon/' + that.id).then(function (data) {
+                    window.Alert.show('兑换成功<br>所处的门店七位编号:<br>' + data.message, function () {
+                        window.location.href = "http://mcdcard.mcdonalds.com.cn/";
+                    });
+                }).catch(function () {
+                    window.Alert.show('兑换失败<br>点击确认重新尝试', that.use);
+                });
+            }
+        }
+    });
+    $(function () {
+        window.OnSwipe['<%=index%>'] = function () {
+            window.swiper.lockSwipes();
+            submit();
+        };
+        function submit() {
+            var data = [];
+
+            for (var i in window.forum) {
+                data.push(window.forum[i].answers);
+            }
+            data[2].v310 = window.forum[2].v310;
+            window.Alert.show('正在提交投票数据', null, true);
+            //console.log('最终数据', data);
+            $.post({url: url(), data: JSON.stringify(data)}).then(function (data) {
+                new Vue({el: '#page8', data: {type: data.data.type, id: data.data.id}});
+                window.Alert.show('投票成功<br>请将此页面交给麦当劳员工查看');
+            }).catch(function () {
+                window.Alert.show('投票失败<br>点击确认重新尝试', submit);
+            });
+        }
+    });
+</script>

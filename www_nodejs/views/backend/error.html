@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>发生错误</title>
+    <% include header.html %>
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+<div class="ui card">
+    <div class="content">
+        <div class="header"><%= message%></div>
+        <div><a class="ui button" href="javascript:window.history.back()">后退</a></div>
+    </div>
+</div>
+</div>
+</body>
+</html>

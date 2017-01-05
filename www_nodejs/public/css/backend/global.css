@@ -1,0 +1,19 @@
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.cursor-default {
+    cursor: default;
+}
+
+.padding-10px {
+    padding: 10px !important;
+}
+
+.padding-5px {
+    padding: 5px !important;
+}
+
+.padding-0px {
+    padding: 0px !important;
+}

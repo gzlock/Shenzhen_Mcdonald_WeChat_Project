@@ -1,0 +1,65 @@
+<style>
+    #loading {
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .loading-show {
+        position: relative;
+        width: 140px;
+        min-height: 120px;
+    }
+
+    .loading-show img {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    .swiper-slide-active .loading-show img:nth-child(1) {
+        -webkit-animation: show 2s .4s forwards;
+        animation: show 2s .8s forwards;
+    }
+
+    .swiper-slide-active .loading-show img:nth-child(2) {
+        -webkit-animation: show 2s .3s forwards;
+        animation: show 2s .6s forwards;
+    }
+
+    .swiper-slide-active .loading-show img:nth-child(3) {
+        -webkit-animation: show 2s .2s forwards;
+        animation: show 2s .4s forwards;
+    }
+
+    .swiper-slide-active .loading-show img:nth-child(4) {
+        -webkit-animation: show 2s .1s forwards;
+        animation: show 2s .2s forwards;
+    }
+
+    .swiper-slide-active .loading-show img:nth-child(5) {
+        -webkit-animation: show 2s forwards;
+        animation: show 2s forwards;
+    }
+</style>
+<div id="loading">
+    <div class="loading-show display-inline-block">
+        <img src="/public/images/page1/show5.png">
+        <img src="/public/images/page1/show4.png">
+        <img src="/public/images/page1/show3.png">
+        <img src="/public/images/page1/show2.png">
+        <img src="/public/images/page1/show1.png">
+    </div>
+</div>
+<script>
+    $(function () {
+        window.lockSwipe();
+        setTimeout(function () {
+            window.next();
+        }, 2500);
+    });
+</script>

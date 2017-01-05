@@ -1,0 +1,59 @@
+<!--搜索组件-->
+<script type="text/html" id="search">
+    <div>
+        <div class="ui icon input" :class="{loading:loading}">
+            <input type="text" :placeholder="placeholder" v-model="input" @input="search | debounce 500">
+            <i class="search icon"></i>
+        </div>
+        <div class="ui button" @click="edit()">新增</div>
+    </div>
+    <div style="padding: 5px;">
+        <button class="ui button" v-for="item in items" @click="edit(item)">{{item.name}}</button>
+    </div>
+</script>
+<script>
+    Vue.component('search', {
+        props: ['placeholder', 'type'],
+        template: '#search',
+        data: function () {
+            return {loading: false, input: null, items: []};
+        },
+        methods: {
+            search: function () {
+                var that = this;
+                var url = '/data/editor/search/' + that.type + '/' + that.input;
+                console.log('search', that.type, url);
+                that.loading = true;
+                $.get(url).then(function (res) {
+                    that.items = res.data;
+                }).catch(function () {
+                    that.items.length = 0;
+                }).done(function () {
+                    that.loading = false;
+                });
+            },
+            edit: function (item) {
+                if (!item) {
+                    switch (this.type) {
+                        case 'store':
+                            item = {
+                                name: null, storeDOId: 0, storeOMId: 0, couponTypeId: 1,
+                                storeOCId: 0, kiosk: false, cafe: false, dt: false, mds: false
+                            };
+                            break;
+                        case 'manager':
+                            item = {name: null, code: null};
+                            break;
+                        case 'do':
+                        case 'om':
+                        case 'oc':
+                            item = {name: null};
+                            break;
+                    }
+                }
+                this.$dispatch('edit', this.type, item);
+            }
+        }
+    })
+</script>
+<!--搜索组件-->

@@ -1,0 +1,16 @@
+<!--列表选择器-->
+<script type="text/html" id="my-switcher">
+    <div class="ui segment">
+        <div class="ui toggle checkbox">
+            <input type="checkbox" class="hidden" v-model="selected">
+            <label>{{text}}</label>
+        </div>
+    </div>
+</script>
+<script>
+    Vue.component('switcher', {
+        template: '#my-switcher',
+        props: ['text', 'selected']
+    });
+</script>
+<!--列表选择器-->

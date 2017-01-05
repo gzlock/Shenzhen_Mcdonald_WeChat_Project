@@ -1,0 +1,1 @@
+console.log('test.js', process.env.NODE_ENV);

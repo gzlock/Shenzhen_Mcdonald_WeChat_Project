@@ -1,0 +1,30 @@
+<div id="page4">
+    <div class="page1-top padding-10px">
+        <img class="left" src="/public/images/page1/top-left.png">
+        <img class="right" src="/public/images/page1/top-right.png">
+    </div>
+    <div class="slogan text-align-center">
+        <img src="/public/images/slogan.png">
+    </div>
+    <div class="padding-10px main-content">
+        <question :question="question" :answers="answers" :type="type" :layout="layout"/>
+    </div>
+    {{hasChecked}}
+    <div class="cursor-animate"></div>
+    <div class="people people2 bottom-right ani" swiper-animate-effect="bounceInUp"
+         swiper-animate-duration="0.5s"></div>
+</div>
+<script>
+    $(function () {
+        var question = window.forum[1] = new Vue({
+            el: '#page4',
+            data: {
+                question: '2、你愿意为我们哪些餐厅经理点赞（多选题）',
+                type: 'checkbox',
+                layout: 'grid',
+                answers: JSON.parse('<%- vote.page4 %>'),
+                checked: true,
+            },
+        });
+    });
+</script>
